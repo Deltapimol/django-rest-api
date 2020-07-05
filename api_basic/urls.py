@@ -6,7 +6,7 @@ urlpatterns = [
     # path('article/', article_list),
 
     # Class based view path for article list
-    path('article/', ArticleAPIView.as_view()),
+    path('generic/article/<int:id>/', ArticleAPIView.as_view()),
 
     # Function based view path for article detail
     # path('article/<int:pk>/', article_detail),

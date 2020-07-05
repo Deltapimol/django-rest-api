@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import mixins
 from .models import Article
 from .serializers import ArticleSerializer
 
@@ -53,21 +55,32 @@ def article_detail(request, pk):
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-# Class based view for Article view.
-class ArticleAPIView(APIView):
+# Class based view for Article view. GenericAPI view used.
+class ArticleAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin
+                     ):
 
-    def get(self, request):
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
+    serializer_class = ArticleSerializer
+    queryset = Article.objects.all()
+
+    lookup_field = 'id'
+
+    def get(self, request, id):
+
+        if id:
+            return self.retrieve(request)
+
+        else:
+            return self.list(request)
 
     def post(self, request):
-        serializer = ArticleSerializer(data=request.data)
+        return self.create(request)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, id=None):
+        return self.update(request, id)
+
+    def delete(self, request, id):
+        return self.destroy(request, id)
 
 
 # Class based view for Article Details.
