@@ -10,6 +10,8 @@ from rest_framework import generics
 from rest_framework import mixins
 from .models import Article
 from .serializers import ArticleSerializer
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET', 'POST'])
@@ -62,8 +64,10 @@ class ArticleAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.Crea
 
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
-
     lookup_field = 'id'
+#   authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
 
